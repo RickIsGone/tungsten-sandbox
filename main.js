@@ -78,22 +78,22 @@ document.addEventListener('mouseup', function () {
    }
 });
 
-hljs.registerLanguage('tungsten', function (hljs) {
-   return {
-      keywords: 'return exit new free extern module export import true false Auto Int Uint Float Double Bool Char String Void Uint8 Uint16 Uint32 Uint64 Int8 Int16 Int32 Int64',
-      contains: [
-         hljs.QUOTE_STRING_MODE,
-         hljs.C_NUMBER_MODE,
-         {
-            className: 'operator',
-            begin: /[+\-*/%=&|^!<>]=?|&&|\|\||\+\+|--|<<=?|>>=?|\?/,
-         },
-         {
-            className: 'punctuation',
-            begin: /[{}[\];(),.:]/,
-         }
-      ]
-   };
-});
-hljs.highlightAll();
+// hljs.registerLanguage('tungsten', function (hljs) {
+//    return {
+//       keywords: 'return exit new free extern module export import true false Auto Int Uint Float Double Bool Char String Void Uint8 Uint16 Uint32 Uint64 Int8 Int16 Int32 Int64',
+//       contains: [
+//          hljs.QUOTE_STRING_MODE,
+//          hljs.C_NUMBER_MODE,
+//          {
+//             className: 'operator',
+//             begin: /[+\-*/%=&|^!<>]=?|&&|\|\||\+\+|--|<<=?|>>=?|\?/,
+//          },
+//          {
+//             className: 'punctuation',
+//             begin: /[{}[\];(),.:]/,
+//          }
+//       ]
+//    };
+// });
+// hljs.highlightAll();
 
