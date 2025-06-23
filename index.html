@@ -6,11 +6,13 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Tungsten Sandbox</title>
    <link rel="stylesheet" href="style.css">
-   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css">
-   <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js"></script>
+   <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css">
+   <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js"></script> -->
+   <script src="main.js"></script>
+   <script src="tungsten.js"></script>
 </head>
 
-<body>
+<body class="dark">
    <div class="topbar">
       <span class="logo">Tungsten Sandbox</span>
       <div class="button-group">
@@ -40,13 +42,12 @@ Int main() {
          </div>
       </div>
    </div>
-   <script src="main.js"></script>
-   <script src="tungsten.js"></script>
-   <script>
+
+   <!-- <script>
       document.getElementById('code').addEventListener('input', function () {
          hljs.highlightElement(this);
       });
-   </script>
+   </script> -->
 </body>
 
 </html>

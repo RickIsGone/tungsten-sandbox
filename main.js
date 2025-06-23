@@ -49,33 +49,35 @@ function clearConsole() {
 }
 
 // Splitter drag logic
-const splitter = document.querySelector('.splitter');
-const editorPanel = document.querySelector('.editor-panel');
-const ioPanel = document.querySelector('.io-panel');
-let isDragging = false;
+document.addEventListener('DOMContentLoaded', function () {
+   const splitter = document.querySelector('.splitter');
+   const editorPanel = document.querySelector('.editor-panel');
+   const ioPanel = document.querySelector('.io-panel');
+   let isDragging = false;
 
-splitter.addEventListener('mousedown', function (e) {
-   isDragging = true;
-   document.body.style.cursor = 'col-resize';
-   document.body.style.userSelect = 'none';
-});
+   splitter.addEventListener('mousedown', function (e) {
+      isDragging = true;
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+   });
 
-document.addEventListener('mousemove', function (e) {
-   if (!isDragging) return;
-   const container = document.querySelector('.split-container');
-   const rect = container.getBoundingClientRect();
-   let percent = (e.clientX - rect.left) / rect.width;
-   percent = Math.max(0.1, Math.min(0.9, percent));
-   editorPanel.style.flex = percent + ' 1 0';
-   ioPanel.style.flex = (1 - percent) + ' 1 0';
-});
+   document.addEventListener('mousemove', function (e) {
+      if (!isDragging) return;
+      const container = document.querySelector('.split-container');
+      const rect = container.getBoundingClientRect();
+      let percent = (e.clientX - rect.left) / rect.width;
+      percent = Math.max(0.1, Math.min(0.9, percent));
+      editorPanel.style.flex = percent + ' 1 0';
+      ioPanel.style.flex = (1 - percent) + ' 1 0';
+   });
 
-document.addEventListener('mouseup', function () {
-   if (isDragging) {
-      isDragging = false;
-      document.body.style.cursor = '';
-      document.body.style.userSelect = '';
-   }
+   document.addEventListener('mouseup', function () {
+      if (isDragging) {
+         isDragging = false;
+         document.body.style.cursor = '';
+         document.body.style.userSelect = '';
+      }
+   });
 });
 
 // hljs.registerLanguage('tungsten', function (hljs) {

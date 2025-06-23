@@ -6,7 +6,7 @@
    --accent: #b57614;
    --button-bg: #b57614;
    --button-hover: #af3a03;
-   --button-stop: #cc241d;
+   --button-stop: #FB4934;
    --button-stop-hover: #9d0006;
    --output-bg: #ebdbb2;
    --output-text: #3c3836;
@@ -16,25 +16,14 @@
    --editor-selection: #d5c4a1;
 }
 
-html,
 body {
-   height: 100%;
-   margin: 0;
-   padding: 0;
-   overflow-x: hidden;
-}
-
-body {
-   margin: 0;
-   padding: 0;
-   font-family: 'Segoe UI', Arial, sans-serif;
    background: var(--primary-bg);
-   height: 100vh;
    color: var(--text-color);
-   transition: background 0.3s, color 0.3s;
+   font-family: 'Segoe UI', Arial, sans-serif;
    min-height: 100vh;
    display: flex;
    flex-direction: column;
+   transition: background 0.3s, color 0.3s;
 }
 
 body.dark {
@@ -55,18 +44,27 @@ body.dark {
    --editor-selection: #3c3836;
 }
 
+html,
+body {
+   height: 100%;
+   margin: 0;
+   padding: 0;
+   overflow-x: hidden;
+}
+
 .topbar {
    display: flex;
    align-items: center;
    justify-content: space-between;
-   background: var(--accent);
-   color: #fff;
+   background: var(--primary-bg);
+   color: var(--output-text);
    padding: 0 24px;
    height: 56px;
    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
    position: relative;
    gap: 16px;
-   /* aggiungi spazio tra gruppi */
+   border-bottom: 2px solid #d5c4a1;
+   /* Gruvbox light border */
 }
 
 .logo {
@@ -125,7 +123,6 @@ body.dark {
    content: "☀️";
 }
 
-/* Luna visibile di default, sole nascosto */
 .icon-moon {
    opacity: 1;
    color: #ffe066;
@@ -138,14 +135,12 @@ body.dark {
    text-shadow: 0 0 2px #000, 0 0 4px #000;
 }
 
-/* In modalità chiara cambia colore icone */
 body.light .icon-moon,
 body.light .icon-sun {
    color: #22223b;
    text-shadow: none;
 }
 
-/* Quando attivo: luna sparisce, sole appare */
 .theme-toggle.active .icon-moon {
    opacity: 0;
    transform: translate(-50%, -50%) scale(0.5) rotate(-90deg);
@@ -165,28 +160,36 @@ body.light .icon-sun {
 }
 
 .run-btn,
-.stop-btn {
+.stop-btn,
+.clear-btn {
    padding: 8px 24px;
    font-size: 1rem;
    border: none;
    border-radius: 4px;
    cursor: pointer;
    font-weight: bold;
-   transition: background 0.2s;
+   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+   color: var(--output-text);
 }
 
 .run-btn {
-   background: var(--button-bg);
+   background: #B8BB26;
+   box-shadow: 0 2px 8px rgba(184, 187, 38, 0.15);
+   display: inline-block;
    color: #fff;
 }
 
 .run-btn:disabled {
    background: #b0c4de;
+   color: #888;
    cursor: not-allowed;
+   box-shadow: none;
 }
 
 .run-btn:hover:not(:disabled) {
-   background: var(--button-hover);
+   background: #a9b820;
+   color: #fff;
+   box-shadow: 0 4px 16px rgba(184, 187, 38, 0.25);
 }
 
 .stop-btn {
@@ -198,10 +201,57 @@ body.light .icon-sun {
    background: var(--button-stop-hover);
 }
 
+.clear-btn {
+   margin-left: auto;
+   background: transparent;
+   border: 1.5px solid #3c3836;
+   color: #3c3836;
+   font-size: 1rem;
+   font-weight: bold;
+   border-radius: 4px;
+   padding: 8px 16px;
+   cursor: pointer;
+   transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.clear-btn:hover {
+   background: #3c3836;
+   color: #fff;
+   border-color: #3c3836;
+}
+
+body.dark .run-btn,
+body.dark .stop-btn,
+body.dark .clear-btn {
+   border-color: #ebdbb2;
+   color: #ebdbb2;
+}
+
+body.dark .clear-btn:hover {
+   background: #ebdbb2;
+   color: #282828;
+   border-color: #ebdbb2;
+}
+
+body.dark .run-btn,
+body.dark .stop-btn {
+   color: #fff;
+}
+
+body.dark .topbar {
+   background: var(--primary-bg);
+   color: var(--output-text);
+   border-bottom: 2px solid #3c3836;
+   /* Gruvbox dark border */
+}
+
+body.dark .run-btn:disabled {
+   color: #888;
+}
+
 .main-content {
    flex: 1 1 auto;
    height: calc(100vh - 56px);
-   /* Adatta all'altezza della topbar */
    display: flex;
    flex-direction: column;
    min-height: 0;
@@ -221,6 +271,27 @@ body.light .icon-sun {
    flex-direction: column;
    min-width: 80px;
    min-height: 0;
+   /* NON mettere qui il border-right! */
+}
+
+/* Solo l'editor-panel ha il bordo a destra */
+.editor-panel {
+   border-right: 2px solid #d5c4a1;
+}
+
+body.dark .editor-panel {
+   border-right: 2px solid #3c3836;
+}
+
+/* Nessun bordo su io-panel */
+.io-panel {
+   border-right: none;
+   border-left: none;
+}
+
+body.dark .io-panel {
+   border-right: none;
+   border-left: none;
 }
 
 .editor-panel label,
@@ -268,38 +339,16 @@ body.light .icon-sun {
    height: 100%;
    min-height: 0;
    max-height: none;
-   /* rimuovi la possibilità di ridimensionare */
    resize: none;
    font-family: 'Fira Mono', 'Consolas', monospace;
    font-size: 1rem;
    padding: 12px;
-   border: 1px solid #d0d0d0;
    border-radius: 4px;
    background: var(--output-bg);
    box-sizing: border-box;
    color: var(--output-text);
    transition: background 0.3s, color 0.3s;
 }
-
-.clear-btn {
-   margin-left: auto;
-   background: transparent;
-   color: #fff;
-   border: 1px solid #fff;
-   border-radius: 4px;
-   padding: 8px 16px;
-   font-size: 1rem;
-   font-weight: bold;
-   cursor: pointer;
-   transition: background 0.2s, color 0.2s;
-}
-
-.clear-btn:hover {
-   background: rgba(255, 255, 255, 0.12);
-   color: #fff;
-}
-
-/* ...existing code... */
 
 .editor-wrapper {
    position: relative;
