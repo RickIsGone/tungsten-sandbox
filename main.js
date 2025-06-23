@@ -5,16 +5,15 @@ var Module = {
    },
    printErr: function (text) {
       const consoleBox = document.getElementById('console');
+      if (text === "tungsten: \x1B[91merror: \x1B[97mno input files\x1B[0m") {
+         return;
+      }
       consoleBox.value += '[stderr] ' + text + '\n';
-   },
-   onRuntimeInitialized: function () {
-      document.querySelector('.run-btn').disabled = false;
    }
 };
 
 // Disabilita il pulsante Start finché il modulo non è pronto e la console in sola lettura
 document.addEventListener('DOMContentLoaded', () => {
-   document.querySelector('.run-btn').disabled = true;
    document.getElementById('console').setAttribute('readonly', true);
 });
 
@@ -26,9 +25,11 @@ async function runCode() {
    Module.callMain(['/tmp/main.tgs']);
 }
 function stopCode() {
+   if (!running)
+      return;
    running = false;
    const consoleBox = document.getElementById('console');
-   consoleBox.value = '[Execution stopped]';
+   consoleBox.value += consoleBox.value.endsWith('\n') ? '[Execution stopped]\n' : '\n[Execution stopped]\n';
    consoleBox.setAttribute('readonly', true);
 }
 
