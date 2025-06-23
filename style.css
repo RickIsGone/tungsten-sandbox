@@ -1,0 +1,366 @@
+:root {
+   /* Gruvbox Light */
+   --primary-bg: #fbf1c7;
+   --panel-bg: #f9f5d7;
+   --text-color: #3c3836;
+   --accent: #b57614;
+   --button-bg: #b57614;
+   --button-hover: #af3a03;
+   --button-stop: #cc241d;
+   --button-stop-hover: #9d0006;
+   --output-bg: #ebdbb2;
+   --output-text: #3c3836;
+   --editor-bg: #f9f5d7;
+   --editor-fg: #3c3836;
+   --editor-cursor: #b57614;
+   --editor-selection: #d5c4a1;
+}
+
+html,
+body {
+   height: 100%;
+   margin: 0;
+   padding: 0;
+   overflow-x: hidden;
+}
+
+body {
+   margin: 0;
+   padding: 0;
+   font-family: 'Segoe UI', Arial, sans-serif;
+   background: var(--primary-bg);
+   height: 100vh;
+   color: var(--text-color);
+   transition: background 0.3s, color 0.3s;
+   min-height: 100vh;
+   display: flex;
+   flex-direction: column;
+}
+
+body.dark {
+   /* Gruvbox Dark */
+   --primary-bg: #282828;
+   --panel-bg: #3c3836;
+   --text-color: #ebdbb2;
+   --accent: #fabd2f;
+   --button-bg: #fabd2f;
+   --button-hover: #b57614;
+   --button-stop: #fb4934;
+   --button-stop-hover: #cc241d;
+   --output-bg: #1d2021;
+   --output-text: #ebdbb2;
+   --editor-bg: #161819;
+   --editor-fg: #ebdbb2;
+   --editor-cursor: #fabd2f;
+   --editor-selection: #3c3836;
+}
+
+.topbar {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   background: var(--accent);
+   color: #fff;
+   padding: 0 24px;
+   height: 56px;
+   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+   position: relative;
+   gap: 16px;
+   /* aggiungi spazio tra gruppi */
+}
+
+.logo {
+   font-size: 1.3rem;
+   font-weight: bold;
+   letter-spacing: 1px;
+   flex: 1;
+}
+
+.button-group {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   position: absolute;
+   left: 50%;
+   transform: translateX(-50%);
+}
+
+.theme-toggle {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   width: 32px;
+   height: 32px;
+   margin-right: 10px;
+   cursor: pointer;
+   position: relative;
+   transition: filter 0.3s;
+   user-select: none;
+   border-radius: 50%;
+   background: none;
+   border: none;
+   outline: none;
+}
+
+.theme-toggle:active {
+   filter: brightness(0.8);
+}
+
+.icon-moon,
+.icon-sun {
+   position: absolute;
+   left: 50%;
+   top: 50%;
+   transform: translate(-50%, -50%) scale(1);
+   font-size: 1.3rem;
+   transition: opacity 0.3s, transform 0.3s, color 0.3s;
+   pointer-events: none;
+}
+
+.icon-moon::before {
+   content: "🌙";
+}
+
+.icon-sun::before {
+   content: "☀️";
+}
+
+/* Luna visibile di default, sole nascosto */
+.icon-moon {
+   opacity: 1;
+   color: #ffe066;
+   text-shadow: 0 0 2px #000, 0 0 4px #000;
+}
+
+.icon-sun {
+   opacity: 0;
+   color: #ffe066;
+   text-shadow: 0 0 2px #000, 0 0 4px #000;
+}
+
+/* In modalità chiara cambia colore icone */
+body.light .icon-moon,
+body.light .icon-sun {
+   color: #22223b;
+   text-shadow: none;
+}
+
+/* Quando attivo: luna sparisce, sole appare */
+.theme-toggle.active .icon-moon {
+   opacity: 0;
+   transform: translate(-50%, -50%) scale(0.5) rotate(-90deg);
+}
+
+.theme-toggle.active .icon-sun {
+   opacity: 1;
+   transform: translate(-50%, -50%) scale(1.1) rotate(0deg);
+}
+
+.icon-sun {
+   opacity: 0;
+}
+
+.theme-toggle.active .icon-sun {
+   opacity: 1;
+}
+
+.run-btn,
+.stop-btn {
+   padding: 8px 24px;
+   font-size: 1rem;
+   border: none;
+   border-radius: 4px;
+   cursor: pointer;
+   font-weight: bold;
+   transition: background 0.2s;
+}
+
+.run-btn {
+   background: var(--button-bg);
+   color: #fff;
+}
+
+.run-btn:disabled {
+   background: #b0c4de;
+   cursor: not-allowed;
+}
+
+.run-btn:hover:not(:disabled) {
+   background: var(--button-hover);
+}
+
+.stop-btn {
+   background: var(--button-stop);
+   color: #fff;
+}
+
+.stop-btn:hover {
+   background: var(--button-stop-hover);
+}
+
+.main-content {
+   flex: 1 1 auto;
+   height: calc(100vh - 56px);
+   /* Adatta all'altezza della topbar */
+   display: flex;
+   flex-direction: column;
+   min-height: 0;
+}
+
+.split-container {
+   flex: 1 1 auto;
+   display: flex;
+   height: 100%;
+   min-height: 0;
+}
+
+.editor-panel,
+.io-panel {
+   flex: 1 1 0;
+   display: flex;
+   flex-direction: column;
+   min-width: 80px;
+   min-height: 0;
+}
+
+.editor-panel label,
+.io-panel label {
+   padding: 8px 0 4px 8px;
+   font-weight: bold;
+   color: #ffe066;
+}
+
+.editor-panel textarea,
+.io-panel textarea {
+   flex: 1 1 auto;
+   width: 100%;
+   height: 100%;
+   resize: none;
+   border: none;
+   outline: none;
+   background: transparent;
+   color: #fff;
+   font-family: 'Fira Mono', 'Consolas', monospace;
+   font-size: 1rem;
+   padding: 12px;
+   box-sizing: border-box;
+   background: rgba(0, 0, 0, 0.12);
+   border-radius: 4px;
+   margin-bottom: 8px;
+   min-height: 0;
+   overflow: auto;
+}
+
+.splitter {
+   width: 6px;
+   cursor: col-resize;
+   background: #232339;
+   transition: background 0.2s;
+   z-index: 2;
+}
+
+.splitter:hover {
+   background: #ffe066;
+}
+
+#console {
+   width: 100%;
+   height: 100%;
+   min-height: 0;
+   max-height: none;
+   /* rimuovi la possibilità di ridimensionare */
+   resize: none;
+   font-family: 'Fira Mono', 'Consolas', monospace;
+   font-size: 1rem;
+   padding: 12px;
+   border: 1px solid #d0d0d0;
+   border-radius: 4px;
+   background: var(--output-bg);
+   box-sizing: border-box;
+   color: var(--output-text);
+   transition: background 0.3s, color 0.3s;
+}
+
+.clear-btn {
+   margin-left: auto;
+   background: transparent;
+   color: #fff;
+   border: 1px solid #fff;
+   border-radius: 4px;
+   padding: 8px 16px;
+   font-size: 1rem;
+   font-weight: bold;
+   cursor: pointer;
+   transition: background 0.2s, color 0.2s;
+}
+
+.clear-btn:hover {
+   background: rgba(255, 255, 255, 0.12);
+   color: #fff;
+}
+
+
+
+
+
+
+.editor-wrapper {
+   position: relative;
+   flex: 1 1 auto;
+   min-height: 0;
+   height: 100%;
+   width: 100%;
+   margin-bottom: 8px;
+}
+
+.editor-wrapper textarea {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   resize: none;
+   border: none;
+   outline: none;
+   background: transparent;
+   color: #fff;
+   font-family: 'Fira Mono', 'Consolas', monospace;
+   font-size: 1rem;
+   padding: 12px;
+   box-sizing: border-box;
+   border-radius: 4px;
+   z-index: 2;
+   background: rgba(0, 0, 0, 0.12);
+   min-height: 0;
+   overflow: auto;
+}
+
+#highlighted-code {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   pointer-events: none;
+   z-index: 1;
+   margin: 0;
+   padding: 12px;
+   box-sizing: border-box;
+   border-radius: 4px;
+   background: rgba(0, 0, 0, 0.12);
+   font-family: 'Fira Mono', 'Consolas', monospace;
+   font-size: 1rem;
+   white-space: pre-wrap;
+   word-break: break-word;
+   overflow: auto;
+   color: transparent;
+}
+
+#highlighted-code code {
+   color: inherit;
+   background: none;
+   font-family: inherit;
+   font-size: inherit;
+   white-space: pre-wrap;
+   word-break: break-word;
+}

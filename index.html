@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Tungsten Sandbox</title>
+   <link rel="stylesheet" href="style.css">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css">
+   <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js"></script>
+</head>
+
+<body>
+   <div class="topbar">
+      <span class="logo">Tungsten Sandbox</span>
+      <div class="button-group">
+         <span class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+            <span class="icon-moon"></span>
+            <span class="icon-sun"></span>
+         </span>
+         <button class="run-btn" onclick="runCode()" disabled>Start</button>
+         <button class="stop-btn" onclick="stopCode()">Stop</button>
+      </div>
+      <button class="clear-btn" onclick="clearConsole()">Clear Output</button>
+   </div>
+   <div class="main-content">
+      <div class="split-container">
+         <div class="editor-panel">
+            <label for="code">main.tgs</label>
+            <div class="editor-wrapper">
+               <textarea id="code" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off">Int main() {
+   println("Hello, World!");
+   return 0;
+}</textarea>
+               <pre id="highlighted-code" aria-hidden="true"><code class="language-tungsten"></code></pre>
+            </div>
+         </div>
+         <div class="splitter"></div>
+         <div class="io-panel">
+            <label for="console">Console</label>
+            <textarea id="console" placeholder="Output will appear here" readonly></textarea>
+         </div>
+      </div>
+   </div>
+   <script src="main.js"></script>
+   <script src="tungsten.js"></script>
+   <script>
+      // Evidenziazione live del codice
+      const textarea = document.getElementById('code');
+      const highlighted = document.getElementById('highlighted-code').querySelector('code');
+      function syncHighlight() {
+         // Escape HTML entities
+         let code = textarea.value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+         highlighted.textContent = code;
+         hljs.highlightElement(highlighted);
+         // Sincronizza scroll
+         document.getElementById('highlighted-code').scrollTop = textarea.scrollTop;
+      }
+      textarea.addEventListener('input', syncHighlight);
+      textarea.addEventListener('scroll', () => {
+         document.getElementById('highlighted-code').scrollTop = textarea.scrollTop;
+      });
+      window.addEventListener('DOMContentLoaded', syncHighlight);
+   </script>
+</body>
+
+</html>
