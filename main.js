@@ -81,22 +81,114 @@ document.addEventListener('DOMContentLoaded', function () {
    });
 });
 
-// hljs.registerLanguage('tungsten', function (hljs) {
-//    return {
-//       keywords: 'return exit new free extern module export import true false Auto Int Uint Float Double Bool Char String Void Uint8 Uint16 Uint32 Uint64 Int8 Int16 Int32 Int64',
-//       contains: [
-//          hljs.QUOTE_STRING_MODE,
-//          hljs.C_NUMBER_MODE,
-//          {
-//             className: 'operator',
-//             begin: /[+\-*/%=&|^!<>]=?|&&|\|\||\+\+|--|<<=?|>>=?|\?/,
-//          },
-//          {
-//             className: 'punctuation',
-//             begin: /[{}[\];(),.:]/,
-//          }
-//       ]
-//    };
-// });
-// hljs.highlightAll();
 
+
+// --- Syntax highlighting for Tungsten ---
+document.addEventListener('DOMContentLoaded', function () {
+   // ...existing splitter code...
+
+   const textarea = document.getElementById('code');
+   const highlighting = document.getElementById('highlighting').firstElementChild;
+
+   // Token regex
+   const keywords = [
+      'return', 'exit', 'new', 'free', 'extern', 'module', 'export', 'import', 'true', 'false'
+   ];
+   const types = [
+      'Auto', 'Int', 'Uint', 'Float', 'Double', 'Bool', 'Char', 'String', 'Void',
+      'Uint8', 'Uint16', 'Uint32', 'Uint64', 'Int8', 'Int16', 'Int32', 'Int64'
+   ];
+
+   // Build one big regex with named groups
+   const tokenRegex = new RegExp(
+      [
+         { name: 'comment', pattern: '\\/\\/.*|\\/\\*[\\s\\S]*?\\*\\/' },
+         { name: 'escape', pattern: '\\\\[ntr0"\'\\\\]' },
+         { name: 'string', pattern: '"([^"\\\\]|\\\\.)*"' },
+         { name: 'int', pattern: '\\b\\d+\\b' },
+         { name: 'keyword', pattern: '\\b(' + keywords.join('|') + ')\\b' },
+         { name: 'type', pattern: '\\b(' + types.join('|') + ')\\b' },
+         { name: 'operator', pattern: '\\+\\+|--|==|!=|<=|>=|->|&&|\\|\\||[+\\-*/%=&|^!<>~]' },
+         { name: 'punctuation', pattern: '[;.,:?(){}\\[\\]]' },
+         // Funzione: identificatore seguito da (
+         { name: 'function', pattern: '\\b[a-zA-Z_][a-zA-Z0-9_]*\\b(?=\\s*\\()' },
+         { name: 'identifier', pattern: '\\b[a-zA-Z_][a-zA-Z0-9_]*\\b' },
+         { name: 'default', pattern: '.' }
+      ].map(t => `(?<${t.name}>${t.pattern})`).join('|'),
+      'g'
+   );
+
+   function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+   }
+
+   function tungstenHighlight(code) {
+      code = escapeHtml(code);
+      let out = '';
+      let match;
+      let lastIndex = 0;
+      while ((match = tokenRegex.exec(code)) !== null) {
+         // Gestisci i newline tra i token
+         if (match.index > lastIndex) {
+            const skipped = code.slice(lastIndex, match.index);
+            out += skipped.replace(/\n/g, '<br>');
+         }
+         lastIndex = tokenRegex.lastIndex;
+         for (const type of [
+            'comment', 'escape', 'string', 'int', 'keyword', 'type', 'operator', 'punctuation', 'function', 'identifier', 'default'
+         ]) {
+            if (match.groups[type]) {
+               let token = match.groups[type];
+               // Evidenzia escape anche dentro le stringhe
+               if (type === 'string') {
+                  token = token.replace(/(\\[ntr0"\'\\])/g, '<span class="tg-escape">$1</span>');
+               }
+               out += `<span class="tg-${type}">${token}</span>`;
+               break;
+            }
+         }
+      }
+      // Gestisci newline dopo l'ultimo token
+      if (lastIndex < code.length) {
+         out += code.slice(lastIndex).replace(/\n/g, '<br>');
+      }
+      // Sostituisci le tabulazioni con 4 spazi non separabili DOPO l'highlight
+      out = out.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+      return out;
+   }
+
+   function updateHighlighting() {
+      let code = textarea.value;
+      // Preserve trailing newline
+      if (code.endsWith('\n')) code += ' ';
+      highlighting.innerHTML = tungstenHighlight(code);
+      // Scroll sync
+      highlighting.parentElement.scrollTop = textarea.scrollTop;
+      highlighting.parentElement.scrollLeft = textarea.scrollLeft;
+   }
+
+   textarea.addEventListener('input', updateHighlighting);
+   textarea.addEventListener('scroll', () => {
+      highlighting.parentElement.scrollTop = textarea.scrollTop;
+      highlighting.parentElement.scrollLeft = textarea.scrollLeft;
+   });
+   textarea.addEventListener('keydown', function (e) {
+      if (e.key === 'Tab') {
+         e.preventDefault();
+         // Usa execCommand se disponibile
+         if (document.queryCommandSupported && document.queryCommandSupported('insertText')) {
+            document.execCommand('insertText', false, '    ');
+         } else {
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
+            this.selectionStart = this.selectionEnd = start + 4;
+         }
+         updateHighlighting();
+      }
+   });
+
+   updateHighlighting();
+});
+
+// ...existing code...

@@ -14,16 +14,18 @@
    --editor-fg: #3c3836;
    --editor-cursor: #b57614;
    --editor-selection: #d5c4a1;
-}
-
-body {
-   background: var(--primary-bg);
-   color: var(--text-color);
-   font-family: 'Segoe UI', Arial, sans-serif;
-   min-height: 100vh;
-   display: flex;
-   flex-direction: column;
-   transition: background 0.3s, color 0.3s;
+   --label-color: #b57614;
+   --label-color-dark: #ffe066;
+   --token-keyword: #9d0006;
+   --token-type: #b57614;
+   --token-identifier: #076678;
+   --token-int: #8f3f71;
+   --token-string: #79740e;
+   --token-comment: #928374;
+   --token-default: #3c3836;
+   --token-escape: #9d0006;
+   --token-punctuation: #7c6f64;
+   --token-function: #427b58;
 }
 
 body.dark {
@@ -38,10 +40,32 @@ body.dark {
    --button-stop-hover: #cc241d;
    --output-bg: #1d2021;
    --output-text: #ebdbb2;
-   --editor-bg: #161819;
+   --editor-bg: #1d2021;
    --editor-fg: #ebdbb2;
    --editor-cursor: #fabd2f;
    --editor-selection: #3c3836;
+   --label-color: #ffe066;
+   --label-color-dark: #ffe066;
+   --token-keyword: #fb4934;
+   --token-type: #fabd2f;
+   --token-identifier: #83a598;
+   --token-int: #d3869b;
+   --token-string: #b8bb26;
+   --token-comment: #928374;
+   --token-default: #ebdbb2;
+   --token-escape: #d3869b;
+   --token-punctuation: #fe8019;
+   --token-function: #b8bb26;
+}
+
+body {
+   background: var(--primary-bg);
+   color: var(--text-color);
+   font-family: 'Segoe UI', Arial, sans-serif;
+   min-height: 100vh;
+   display: flex;
+   flex-direction: column;
+   transition: background 0.3s, color 0.3s;
 }
 
 html,
@@ -63,8 +87,7 @@ body {
    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
    position: relative;
    gap: 16px;
-   border-bottom: 2px solid #d5c4a1;
-   /* Gruvbox light border */
+   border-bottom: 2px solid var(--editor-selection);
 }
 
 .logo {
@@ -151,14 +174,6 @@ body.light .icon-sun {
    transform: translate(-50%, -50%) scale(1.1) rotate(0deg);
 }
 
-.icon-sun {
-   opacity: 0;
-}
-
-.theme-toggle.active .icon-sun {
-   opacity: 1;
-}
-
 .run-btn,
 .stop-btn,
 .clear-btn {
@@ -175,7 +190,6 @@ body.light .icon-sun {
 .run-btn {
    background: #B8BB26;
    box-shadow: 0 2px 8px rgba(184, 187, 38, 0.15);
-   display: inline-block;
    color: #fff;
 }
 
@@ -204,8 +218,8 @@ body.light .icon-sun {
 .clear-btn {
    margin-left: auto;
    background: transparent;
-   border: 1.5px solid #3c3836;
-   color: #3c3836;
+   border: 1.5px solid var(--text-color);
+   color: var(--text-color);
    font-size: 1rem;
    font-weight: bold;
    border-radius: 4px;
@@ -215,22 +229,22 @@ body.light .icon-sun {
 }
 
 .clear-btn:hover {
-   background: #3c3836;
+   background: var(--text-color);
    color: #fff;
-   border-color: #3c3836;
+   border-color: var(--text-color);
 }
 
 body.dark .run-btn,
 body.dark .stop-btn,
 body.dark .clear-btn {
-   border-color: #ebdbb2;
-   color: #ebdbb2;
+   border-color: var(--output-text);
+   color: var(--output-text);
 }
 
 body.dark .clear-btn:hover {
-   background: #ebdbb2;
-   color: #282828;
-   border-color: #ebdbb2;
+   background: var(--output-text);
+   color: var(--primary-bg);
+   border-color: var(--output-text);
 }
 
 body.dark .run-btn,
@@ -241,8 +255,7 @@ body.dark .stop-btn {
 body.dark .topbar {
    background: var(--primary-bg);
    color: var(--output-text);
-   border-bottom: 2px solid #3c3836;
-   /* Gruvbox dark border */
+   border-bottom: 2px solid var(--editor-selection);
 }
 
 body.dark .run-btn:disabled {
@@ -271,19 +284,16 @@ body.dark .run-btn:disabled {
    flex-direction: column;
    min-width: 80px;
    min-height: 0;
-   /* NON mettere qui il border-right! */
 }
 
-/* Solo l'editor-panel ha il bordo a destra */
 .editor-panel {
-   border-right: 2px solid #d5c4a1;
+   border-right: 2px solid var(--editor-selection);
 }
 
 body.dark .editor-panel {
-   border-right: 2px solid #3c3836;
+   border-right: 2px solid #504945;
 }
 
-/* Nessun bordo su io-panel */
 .io-panel {
    border-right: none;
    border-left: none;
@@ -298,7 +308,7 @@ body.dark .io-panel {
 .io-panel label {
    padding: 8px 0 4px 8px;
    font-weight: bold;
-   color: #ffe066;
+   color: var(--label-color);
 }
 
 .editor-panel textarea,
@@ -309,14 +319,13 @@ body.dark .io-panel {
    resize: none;
    border: none;
    outline: none;
-   background: transparent;
-   color: #fff;
+   background: var(--output-bg);
+   color: var(--output-text);
    font-family: 'Fira Mono', 'Consolas', monospace;
    font-size: 1rem;
    padding: 12px;
    box-sizing: border-box;
-   background: rgba(0, 0, 0, 0.12);
-   border-radius: 4px;
+   border-radius: 0px;
    margin-bottom: 8px;
    min-height: 0;
    overflow: auto;
@@ -343,11 +352,19 @@ body.dark .io-panel {
    font-family: 'Fira Mono', 'Consolas', monospace;
    font-size: 1rem;
    padding: 12px;
-   border-radius: 4px;
+   border-radius: 0px;
    background: var(--output-bg);
    box-sizing: border-box;
    color: var(--output-text);
    transition: background 0.3s, color 0.3s;
+}
+
+/* Sfondo editor */
+body.dark .editor-wrapper,
+body.light .editor-wrapper,
+
+.editor-wrapper pre textarea {
+   background: var(--output-bg) !important;
 }
 
 .editor-wrapper {
@@ -356,9 +373,37 @@ body.dark .io-panel {
    min-height: 0;
    height: 100%;
    width: 100%;
-   margin-bottom: 8px;
+   margin-bottom: 0;
 }
 
+/* Highlight overlay */
+.editor-wrapper pre {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   margin: 0;
+   pointer-events: none;
+   font-family: 'Fira Mono', 'Consolas', monospace;
+   font-size: 1rem;
+   padding: 12px;
+   box-sizing: border-box;
+   border-radius: 0px;
+   z-index: 1;
+   white-space: pre-wrap;
+   word-break: break-word;
+   overflow: auto;
+   background: transparent;
+   color: var(--token-default);
+}
+
+.editor-wrapper pre {
+   /* color: var(--token-default); */
+   background: transparent !important;
+}
+
+/* Il textarea deve essere trasparente sopra il pre */
 .editor-wrapper textarea {
    position: absolute;
    top: 0;
@@ -368,45 +413,62 @@ body.dark .io-panel {
    resize: none;
    border: none;
    outline: none;
-   background: transparent;
-   color: #fff;
    font-family: 'Fira Mono', 'Consolas', monospace;
    font-size: 1rem;
    padding: 12px;
    box-sizing: border-box;
-   border-radius: 4px;
+   border-radius: 0px;
    z-index: 2;
-   background: rgba(0, 0, 0, 0.12);
    min-height: 0;
    overflow: auto;
+   color: transparent !important;
+   background: transparent !important;
+   caret-color: var(--editor-cursor);
 }
 
-#highlighted-code {
-   position: absolute;
-   top: 0;
-   left: 0;
-   width: 100%;
-   height: 100%;
-   pointer-events: none;
-   z-index: 1;
-   margin: 0;
-   padding: 12px;
-   box-sizing: border-box;
-   border-radius: 4px;
-   background: rgba(0, 0, 0, 0.12);
-   font-family: 'Fira Mono', 'Consolas', monospace;
-   font-size: 1rem;
-   white-space: pre-wrap;
-   word-break: break-word;
-   overflow: auto;
-   color: transparent;
+
+
+
+
+
+/* Token styles */
+.tg-keyword {
+   color: var(--token-keyword);
 }
 
-#highlighted-code code {
-   color: inherit;
-   background: none;
-   font-family: inherit;
-   font-size: inherit;
-   white-space: pre-wrap;
-   word-break: break-word;
+.tg-type {
+   color: var(--token-type);
+}
+
+.tg-identifier {
+   color: var(--token-identifier);
+}
+
+.tg-int {
+   color: var(--token-int);
+}
+
+.tg-string {
+   color: var(--token-string);
+}
+
+.tg-comment {
+   color: var(--token-comment);
+   font-style: italic;
+}
+
+.tg-default {
+   color: var(--token-default);
+}
+
+.tg-escape {
+   color: var(--token-escape);
+}
+
+.tg-punctuation {
+   color: var(--token-punctuation);
+}
+
+.tg-function {
+   color: var(--token-function);
 }

@@ -6,8 +6,6 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Tungsten Sandbox</title>
    <link rel="stylesheet" href="style.css">
-   <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css">
-   <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js"></script> -->
    <script src="main.js"></script>
    <script src="tungsten.js"></script>
 </head>
@@ -29,25 +27,23 @@
       <div class="split-container">
          <div class="editor-panel">
             <label for="code">main.tgs</label>
-            <textarea id="code" placeholder="Write your code here...">
+            <div class="editor-wrapper">
+               <pre id="highlighting" aria-hidden="true"><code></code></pre>
+               <textarea id="code" placeholder="Write your code here...">import stdio;
+
 Int main() {
-   println("Hello, World!");
-   return 0;
+    println("Hello, World!");
+    return 0;
 }</textarea>
+            </div>
          </div>
          <div class="splitter"></div>
          <div class="io-panel">
             <label for="console">Console</label>
-            <textarea id="console" placeholder="Output will appear here" readonly></textarea>
+            <textarea id="console" placeholder="Your program's output will appear here.." readonly></textarea>
          </div>
       </div>
    </div>
-
-   <!-- <script>
-      document.getElementById('code').addEventListener('input', function () {
-         hljs.highlightElement(this);
-      });
-   </script> -->
 </body>
 
 </html>
