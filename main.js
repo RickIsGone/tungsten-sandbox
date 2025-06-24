@@ -92,11 +92,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
    // Token regex
    const keywords = [
-      'return', 'exit', 'new', 'free', 'extern', 'module', 'export', 'import', 'true', 'false'
+      'return', 'exit', 'new', 'free', 'extern', 'module', 'export', 'import', 'if', 'else', 'while', 'for', 'do', 'switch', 'case', 'default',
+      'break', 'continue'
    ];
    const types = [
       'Auto', 'Int', 'Uint', 'Float', 'Double', 'Bool', 'Char', 'String', 'Void',
       'Uint8', 'Uint16', 'Uint32', 'Uint64', 'Int8', 'Int16', 'Int32', 'Int64'
+   ];
+   const consts = [
+      'true', 'false', 'null', 'nullptr', 'CodeSuccess', 'CodeFailure'
    ];
 
    // Build one big regex with named groups
@@ -108,25 +112,22 @@ document.addEventListener('DOMContentLoaded', function () {
          { name: 'int', pattern: '\\b\\d+\\b' },
          { name: 'keyword', pattern: '\\b(' + keywords.join('|') + ')\\b' },
          { name: 'type', pattern: '\\b(' + types.join('|') + ')\\b' },
+         { name: 'consts', pattern: '\\b(' + consts.join('|') + ')\\b' },
          { name: 'operator', pattern: '\\+\\+|--|==|!=|<=|>=|->|&&|\\|\\||[+\\-*/%=&|^!<>~]' },
          { name: 'punctuation', pattern: '[;.,:?(){}\\[\\]]' },
          // Funzione: identificatore seguito da (
          { name: 'function', pattern: '\\b[a-zA-Z_][a-zA-Z0-9_]*\\b(?=\\s*\\()' },
-         { name: 'identifier', pattern: '\\b[a-zA-Z_][a-zA-Z0-9_]*\\b' },
+         { name: 'identifier', pattern: '\\b[a-zA-Z_][\\w\\u00C0-\\uFFFF]*\\b' },
          { name: 'default', pattern: '.' }
       ].map(t => `(?<${t.name}>${t.pattern})`).join('|'),
       'g'
    );
 
-   function escapeHtml(str) {
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-   }
-
    function tungstenHighlight(code) {
-      code = escapeHtml(code);
       let out = '';
       let match;
       let lastIndex = 0;
+
       while ((match = tokenRegex.exec(code)) !== null) {
          // Gestisci i newline tra i token
          if (match.index > lastIndex) {
@@ -134,24 +135,31 @@ document.addEventListener('DOMContentLoaded', function () {
             out += skipped.replace(/\n/g, '<br>');
          }
          lastIndex = tokenRegex.lastIndex;
+
          for (const type of [
-            'comment', 'escape', 'string', 'int', 'keyword', 'type', 'operator', 'punctuation', 'function', 'identifier', 'default'
+            'comment', 'escape', 'string', 'int', 'keyword', 'type', 'consts', 'operator', 'punctuation', 'function', 'identifier', 'default'
          ]) {
             if (match.groups[type]) {
                let token = match.groups[type];
+
                // Evidenzia escape anche dentro le stringhe
                if (type === 'string') {
                   token = token.replace(/(\\[ntr0"\'\\])/g, '<span class="tg-escape">$1</span>');
                }
-               out += `<span class="tg-${type}">${token}</span>`;
+
+               // Tratta consts come int
+               const className = type === 'consts' ? 'tg-int' : type === 'operator' ? 'tg-punctuation' : `tg-${type}`;
+               out += `<span class="${className}">${token}</span>`;
                break;
             }
          }
       }
+
       // Gestisci newline dopo l'ultimo token
       if (lastIndex < code.length) {
          out += code.slice(lastIndex).replace(/\n/g, '<br>');
       }
+
       // Sostituisci le tabulazioni con 4 spazi non separabili DOPO l'highlight
       out = out.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
       return out;
@@ -161,7 +169,8 @@ document.addEventListener('DOMContentLoaded', function () {
       let code = textarea.value;
       // Preserve trailing newline
       if (code.endsWith('\n')) code += ' ';
-      highlighting.innerHTML = tungstenHighlight(code);
+      const highlightedCode = tungstenHighlight(code);
+      highlighting.innerHTML = highlightedCode;
       // Scroll sync
       highlighting.parentElement.scrollTop = textarea.scrollTop;
       highlighting.parentElement.scrollLeft = textarea.scrollLeft;
