@@ -43,6 +43,12 @@ function enableInput() {
 function toggleTheme() {
    document.body.classList.toggle('light');
    document.body.classList.toggle('dark');
+
+   if (document.body.classList.contains('light')) {
+      document.querySelector('.theme-toggle').setAttribute('title', 'Toggle Dark Mode');
+   } else {
+      document.querySelector('.theme-toggle').setAttribute('title', 'Toggle Light Mode');
+   }
    document.querySelector('.theme-toggle').classList.toggle('active');
 }
 function clearConsole() {
@@ -116,11 +122,11 @@ document.addEventListener('DOMContentLoaded', function () {
          { name: 'operator', pattern: '\\+\\+|--|==|!=|<=|>=|->|&&|\\|\\||[+\\-*/%=&|^!<>~]' },
          { name: 'punctuation', pattern: '[;.,:?(){}\\[\\]]' },
          // Funzione: identificatore seguito da (
-         { name: 'function', pattern: '\\b[a-zA-Z_][a-zA-Z0-9_]*\\b(?=\\s*\\()' },
-         { name: 'identifier', pattern: '\\b[a-zA-Z_][\\w\\u00C0-\\uFFFF]*\\b' },
+         { name: 'function', pattern: '[a-zA-Z_\\u00C0-\\u02AF\\u0370-\\u1FFF\\u2C00-\\uD7FF][\\w\\u00C0-\\u02AF\\u0370-\\u1FFF\\u2C00-\\uD7FF]*(?=\\s*\\()' },
+         { name: 'identifier', pattern: '[a-zA-Z_\\u00C0-\\u02AF\\u0370-\\u1FFF\\u2C00-\\uD7FF][\\w\\u00C0-\\u02AF\\u0370-\\u1FFF\\u2C00-\\uD7FF]*' },
          { name: 'default', pattern: '.' }
       ].map(t => `(?<${t.name}>${t.pattern})`).join('|'),
-      'g'
+      'gu'
    );
 
    function tungstenHighlight(code) {
@@ -184,15 +190,34 @@ document.addEventListener('DOMContentLoaded', function () {
    textarea.addEventListener('keydown', function (e) {
       if (e.key === 'Tab') {
          e.preventDefault();
-         // Usa execCommand se disponibile
-         if (document.queryCommandSupported && document.queryCommandSupported('insertText')) {
-            document.execCommand('insertText', false, '    ');
-         } else {
-            const start = this.selectionStart;
-            const end = this.selectionEnd;
-            this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
-            this.selectionStart = this.selectionEnd = start + 4;
-         }
+         const start = this.selectionStart;
+         const end = this.selectionEnd;
+         this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
+         this.selectionStart = this.selectionEnd = start + 4;
+         updateHighlighting();
+
+      } else if (e.key === 'Enter') {
+         e.preventDefault();
+         const start = this.selectionStart;
+         const before = this.value.substring(0, start);
+         const after = this.value.substring(this.selectionEnd);
+
+         // Trova la riga corrente
+         const lines = before.split('\n');
+         const lastLine = lines[lines.length - 1];
+
+         // Estrai indentazione (tab o spazi all'inizio della riga)
+         const indentMatch = lastLine.match(/^[ \t]*/);
+         const indent = indentMatch ? indentMatch[0] : '';
+
+         // Inserisce una nuova riga con la stessa indentazione
+         const insert = '\n' + indent;
+         this.value = before + insert + after;
+
+         // Posiziona il cursore dopo l'indentazione
+         const newPos = start + insert.length;
+         this.selectionStart = this.selectionEnd = newPos;
+
          updateHighlighting();
       }
    });
