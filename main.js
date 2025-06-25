@@ -12,11 +12,6 @@ var Module = {
    }
 };
 
-// Disabilita il pulsante Start finché il modulo non è pronto e la console in sola lettura
-document.addEventListener('DOMContentLoaded', () => {
-   document.getElementById('console').setAttribute('readonly', true);
-});
-
 let running = false;
 async function runCode() {
    const code = document.getElementById('code').value;
@@ -24,6 +19,7 @@ async function runCode() {
    Module.FS_writeFile('/tmp/main.tgs', code);
    Module.callMain(['/tmp/main.tgs']);
 }
+
 function stopCode() {
    if (!running)
       return;
@@ -51,12 +47,13 @@ function toggleTheme() {
    }
    document.querySelector('.theme-toggle').classList.toggle('active');
 }
+
 function clearConsole() {
    document.getElementById('console').value = '';
 }
 
-// Splitter drag logic
 document.addEventListener('DOMContentLoaded', function () {
+   // Splitter drag logic
    const splitter = document.querySelector('.splitter');
    const editorPanel = document.querySelector('.editor-panel');
    const ioPanel = document.querySelector('.io-panel');
@@ -85,14 +82,9 @@ document.addEventListener('DOMContentLoaded', function () {
          document.body.style.userSelect = '';
       }
    });
-});
 
 
-
-// --- Syntax highlighting for Tungsten ---
-document.addEventListener('DOMContentLoaded', function () {
-   // ...existing splitter code...
-
+   /* --- Syntax highlighting for Tungsten --- */
    const textarea = document.getElementById('code');
    const highlighting = document.getElementById('highlighting').firstElementChild;
 
@@ -121,7 +113,6 @@ document.addEventListener('DOMContentLoaded', function () {
          { name: 'consts', pattern: '\\b(' + consts.join('|') + ')\\b' },
          { name: 'operator', pattern: '\\+\\+|--|==|!=|<=|>=|->|&&|\\|\\||[+\\-*/%=&|^!<>~]' },
          { name: 'punctuation', pattern: '[;.,:?(){}\\[\\]]' },
-         // Funzione: identificatore seguito da (
          { name: 'function', pattern: '[a-zA-Z_\\u00C0-\\u02AF\\u0370-\\u1FFF\\u2C00-\\uD7FF][\\w\\u00C0-\\u02AF\\u0370-\\u1FFF\\u2C00-\\uD7FF]*(?=\\s*\\()' },
          { name: 'identifier', pattern: '[a-zA-Z_\\u00C0-\\u02AF\\u0370-\\u1FFF\\u2C00-\\uD7FF][\\w\\u00C0-\\u02AF\\u0370-\\u1FFF\\u2C00-\\uD7FF]*' },
          { name: 'default', pattern: '.' }
@@ -187,42 +178,28 @@ document.addEventListener('DOMContentLoaded', function () {
       highlighting.parentElement.scrollTop = textarea.scrollTop;
       highlighting.parentElement.scrollLeft = textarea.scrollLeft;
    });
+
    textarea.addEventListener('keydown', function (e) {
       if (e.key === 'Tab') {
          e.preventDefault();
-         const start = this.selectionStart;
-         const end = this.selectionEnd;
-         this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
-         this.selectionStart = this.selectionEnd = start + 4;
+         document.execCommand('insertText', false, '    ');
          updateHighlighting();
+      }
 
-      } else if (e.key === 'Enter') {
+      else if (e.key === 'Enter') {
          e.preventDefault();
+
          const start = this.selectionStart;
          const before = this.value.substring(0, start);
-         const after = this.value.substring(this.selectionEnd);
-
-         // Trova la riga corrente
          const lines = before.split('\n');
          const lastLine = lines[lines.length - 1];
-
-         // Estrai indentazione (tab o spazi all'inizio della riga)
          const indentMatch = lastLine.match(/^[ \t]*/);
          const indent = indentMatch ? indentMatch[0] : '';
 
-         // Inserisce una nuova riga con la stessa indentazione
-         const insert = '\n' + indent;
-         this.value = before + insert + after;
-
-         // Posiziona il cursore dopo l'indentazione
-         const newPos = start + insert.length;
-         this.selectionStart = this.selectionEnd = newPos;
-
+         document.execCommand('insertText', false, '\n' + indent);
          updateHighlighting();
       }
    });
 
    updateHighlighting();
 });
-
-// ...existing code...
