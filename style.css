@@ -8,6 +8,10 @@
    --button-hover: #af3a03;
    --button-stop: #FB4934;
    --button-stop-hover: #9d0006;
+   --button-clear: #ebdbb2;
+   --button-clear-text: #282828;
+   --button-clear-hover: #282828;
+   --button-clear-hover-text: #ebdbb2;
    --output-bg: #ebdbb2;
    --output-text: #3c3836;
    --editor-bg: #ebdbb2;
@@ -39,6 +43,10 @@ body.dark {
    --button-hover: #b57614;
    --button-stop: #fb4934;
    --button-stop-hover: #cc241d;
+   --button-clear: #3c3836;
+   --button-clear-text: #ebdbb2;
+   --button-clear-hover: #ebdbb2;
+   --button-clear-hover-text: #3c3836;
    --output-bg: #1d2021;
    --output-text: #ebdbb2;
    --editor-bg: #1d2021;
@@ -171,8 +179,7 @@ body {
 }
 
 .run-btn,
-.stop-btn,
-.clear-btn {
+.stop-btn {
    padding: 8px 24px;
    font-size: 1rem;
    border: none;
@@ -180,24 +187,21 @@ body {
    cursor: pointer;
    font-weight: bold;
    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-   color: var(--output-text);
+   color: #fff;
 }
 
 .run-btn {
    background: #B8BB26;
    box-shadow: 0 2px 8px rgba(184, 187, 38, 0.15);
-   color: #fff;
 }
 
-.run-btn:hover:not(:disabled) {
+.run-btn:hover {
    background: #a9b820;
-   color: #fff;
    box-shadow: 0 4px 16px rgba(184, 187, 38, 0.25);
 }
 
 .stop-btn {
    background: var(--button-stop);
-   color: #fff;
 }
 
 .stop-btn:hover {
@@ -207,8 +211,8 @@ body {
 .clear-btn {
    margin-left: auto;
    background: transparent;
-   border: 1.5px solid var(--text-color);
-   color: var(--text-color);
+   border: 1.5px solid var(--button-clear-text);
+   color: var(--button-clear-text);
    font-size: 1rem;
    font-weight: bold;
    border-radius: 4px;
@@ -218,27 +222,9 @@ body {
 }
 
 .clear-btn:hover {
-   background: var(--text-color);
-   color: #fff;
-   border-color: var(--text-color);
-}
-
-body.dark .run-btn,
-body.dark .stop-btn,
-body.dark .clear-btn {
-   border-color: var(--output-text);
-   color: var(--output-text);
-}
-
-body.dark .clear-btn:hover {
-   background: var(--output-text);
-   color: var(--primary-bg);
-   border-color: var(--output-text);
-}
-
-body.dark .run-btn,
-body.dark .stop-btn {
-   color: #fff;
+   background: var(--button-clear-hover);
+   color: var(--button-clear-hover-text);
+   border-color: var(--button-clear-hover-text);
 }
 
 .topbar {
