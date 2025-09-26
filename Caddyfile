@@ -1,0 +1,7 @@
+{
+	admin unix//home/rickisgone/caddy-admin.sock
+}
+http://rickisgone.hackclub.app {
+	bind unix/.rickisgone.hackclub.app.webserver.sock|777
+	reverse_proxy :35161
+}

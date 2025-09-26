@@ -1,0 +1,17 @@
+[Unit]
+Description=Caddy
+Documentation=https://caddyserver.com/docs/
+After=network.target
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/caddy run --environ --config %h/Caddyfile
+ExecReload=/usr/bin/caddy reload --config %h/Caddyfile --force
+TimeoutStopSec=5s
+LimitNOFILE=1048576
+PrivateTmp=true
+ProtectSystem=full
+UMask=0
+
+[Install]
+WantedBy=default.target

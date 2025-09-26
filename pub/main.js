@@ -1,35 +1,46 @@
-var Module = {
-   print: function (text) {
-      const consoleBox = document.getElementById('console');
-      consoleBox.value += text + '\n';
-   },
-   printErr: function (text) {
-      const consoleBox = document.getElementById('console');
-      if (text === "tungsten: \x1B[91merror: \x1B[97mno input files\x1B[0m") {
-         return;
-      }
-      consoleBox.value += '[stderr] ' + text + '\n';
-   }
-};
-
+let socket;
 let running = false;
-async function runCode() {
+
+function setupSocket() {
+   try {
+      socket = new WebSocket(`wss://${location.hostname}/`);
+
+      socket.onmessage = (event) => {
+         const data = JSON.parse(event.data);
+         const consoleBox = document.getElementById('console');
+
+         if (data.type === 'stdout') consoleBox.value += data.text;
+         if (data.type === 'stderr') consoleBox.value += data.text;
+         if (data.type === 'status' && data.command !== 'tungsten') consoleBox.value += `\n[${data.command} exited with ${data.code}]\n`;
+         if (data.type === 'stopped') consoleBox.value += '\n[Execution stopped]\n';
+
+         consoleBox.scrollTop = consoleBox.scrollHeight;
+      };
+
+      socket.onopen = () => console.log("WebSocket connected");
+      socket.onclose = () => console.log("WebSocket disconnected");
+   } catch (e) {
+      console.error("WebSocket creation failed:", e);
+   }
+}
+
+document.addEventListener('DOMContentLoaded', setupSocket);
+
+function runCode() {
    const code = document.getElementById('code').value;
    if (!code.trim()) return;
-   Module.FS_writeFile('/tmp/main.tgs', code);
-   Module.callMain(['/tmp/main.tgs']);
+
+   socket.send(JSON.stringify({ type: 'run', code }));
+   running = true;
 }
+
 
 function stopCode() {
-   if (!running)
-      return;
+   if (!running) return;
    running = false;
-   const consoleBox = document.getElementById('console');
-   consoleBox.value += consoleBox.value.endsWith('\n') ? '[Execution stopped]\n' : '\n[Execution stopped]\n';
-   consoleBox.setAttribute('readonly', true);
+   socket.send(JSON.stringify({ type: 'stop' }));
 }
 
-// Call this function from C++/WASM when you want to enable input
 function enableInput() {
    const consoleBox = document.getElementById('console');
    consoleBox.removeAttribute('readonly');
@@ -90,12 +101,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
    // Token regex
    const keywords = [
-      'return', 'exit', 'new', 'free', 'extern', 'module', 'export', 'import', 'if', 'else', 'while', 'for', 'do', 'switch', 'case', 'default',
-      'break', 'continue'
+      'return', 'exit', 'extern', 'if', 'else', 'while', 'for', 'do'
+      // , 'new', 'free', 'switch', 'case', 'default', 'module', 'export', 'import', 'break', 'continue'
    ];
    const types = [
-      'Auto', 'Int', 'Uint', 'Float', 'Double', 'Bool', 'Char', 'String', 'Void',
-      'Uint8', 'Uint16', 'Uint32', 'Uint64', 'Int8', 'Int16', 'Int32', 'Int64'
+      'Bool', 'Char', 'String', 'Void', 'Num'
+      // 'Auto', 'Int', 'Uint', 'Float', 'Uint8', 'Uint16', 'Uint32', 'Uint64', 'Int8', 'Int16', 'Int32', 'Int64', 'Double'
    ];
    const consts = [
       'true', 'false', 'null', 'nullptr', 'CodeSuccess', 'CodeFailure'
@@ -126,7 +137,6 @@ document.addEventListener('DOMContentLoaded', function () {
       let lastIndex = 0;
 
       while ((match = tokenRegex.exec(code)) !== null) {
-         // Gestisci i newline tra i token
          if (match.index > lastIndex) {
             const skipped = code.slice(lastIndex, match.index);
             out += skipped.replace(/\n/g, '<br>');
@@ -139,12 +149,10 @@ document.addEventListener('DOMContentLoaded', function () {
             if (match.groups[type]) {
                let token = match.groups[type];
 
-               // Evidenzia escape anche dentro le stringhe
                if (type === 'string') {
                   token = token.replace(/(\\[ntr0"\'\\])/g, '<span class="tg-escape">$1</span>');
                }
 
-               // Tratta consts come int
                const className = type === 'consts' ? 'tg-int' : type === 'operator' ? 'tg-punctuation' : `tg-${type}`;
                out += `<span class="${className}">${token}</span>`;
                break;
@@ -157,7 +165,6 @@ document.addEventListener('DOMContentLoaded', function () {
          out += code.slice(lastIndex).replace(/\n/g, '<br>');
       }
 
-      // Sostituisci le tabulazioni con 4 spazi non separabili DOPO l'highlight
       out = out.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
       return out;
    }

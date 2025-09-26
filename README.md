@@ -4,7 +4,7 @@
 
 ## About
 
-This project provides an interactive environment to write, run, and test Tungsten code directly in your browser. It uses [Emscripten](https://emscripten.org/index.html) to compile the official Tungsten compiler to WebAssembly, allowing you to try it in your browser without having to install it locally on your PC.
+This project provides an interactive environment to write, run, and test Tungsten code directly in your browser.
 
 ## Official Compiler
 
