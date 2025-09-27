@@ -1,7 +1,7 @@
 # Tungsten Sandbox
 
 **Tungsten Sandbox** is a web-based playground for experimenting with the [Tungsten](https://github.com/rickisgone/tungsten) programming language and compiler.  
-you can try it out at [http://tungsten.codes](http://tungsten.codes)
+you can try it out at [https://tungsten.codes](https://tungsten.codes)
 
 ## About
 
