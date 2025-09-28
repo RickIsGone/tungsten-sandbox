@@ -11,8 +11,11 @@ function setupSocket() {
 
          if (data.type === 'stdout') consoleBox.value += data.text;
          if (data.type === 'stderr') consoleBox.value += data.text;
-         if (data.type === 'status' && data.command !== 'tungsten') consoleBox.value += `\n[${data.command} exited with ${data.code}]\n`;
-         if (data.type === 'stopped') consoleBox.value += '\n[Execution stopped]\n';
+         if (data.type === 'status' && data.command !== 'tungsten') {
+            running = false;
+            consoleBox.value += `\n[${data.command} exited with ${data.code}]\n\n`;
+         }
+         if (data.type === 'stopped') consoleBox.value += '\n[Execution stopped]\n\n';
 
          consoleBox.scrollTop = consoleBox.scrollHeight;
       };
@@ -44,6 +47,12 @@ function stopCode() {
 function enableInput() {
    const consoleBox = document.getElementById('console');
    consoleBox.removeAttribute('readonly');
+   consoleBox.focus();
+}
+
+function disableInput() {
+   const consoleBox = document.getElementById('console');
+   consoleBox.setAttribute('readonly', true);
    consoleBox.focus();
 }
 
@@ -137,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
       let lastIndex = 0;
 
       while ((match = tokenRegex.exec(code)) !== null) {
+         // Gestisci i newline tra i token
          if (match.index > lastIndex) {
             const skipped = code.slice(lastIndex, match.index);
             out += skipped.replace(/\n/g, '<br>');
@@ -149,10 +159,12 @@ document.addEventListener('DOMContentLoaded', function () {
             if (match.groups[type]) {
                let token = match.groups[type];
 
+               // Evidenzia escape anche dentro le stringhe
                if (type === 'string') {
                   token = token.replace(/(\\[ntr0"\'\\])/g, '<span class="tg-escape">$1</span>');
                }
 
+               // Tratta consts come int
                const className = type === 'consts' ? 'tg-int' : type === 'operator' ? 'tg-punctuation' : `tg-${type}`;
                out += `<span class="${className}">${token}</span>`;
                break;
@@ -165,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
          out += code.slice(lastIndex).replace(/\n/g, '<br>');
       }
 
+      // Sostituisci le tabulazioni con 4 spazi non separabili DOPO l'highlight
       out = out.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
       return out;
    }

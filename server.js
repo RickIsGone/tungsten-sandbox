@@ -15,7 +15,6 @@ const server = http.createServer({
 }, app);
 
 const wss = new WebSocket.Server({ server });
-
 app.use(express.static('pub'));
 app.use(express.json());
 
